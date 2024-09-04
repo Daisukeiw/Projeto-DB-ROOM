@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,12 +28,37 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.room.Room
+import com.example.appdatabase.roomDB.Pessoa
+import com.example.appdatabase.roomDB.PessoaDao
+import com.example.appdatabase.roomDB.PessoaDataBase
 import com.example.appdatabase.ui.theme.AppDatabaseTheme
+import com.example.appdatabase.viewModel.PessoaViewModel
+import com.example.appdatabase.viewModel.Repository
 import org.w3c.dom.Text
 import androidx.compose.material3.Text as Text1
 
 class MainActivity : ComponentActivity() {
+
+    private val db by lazy {
+        Room.databaseBuilder(
+            applicationContext,
+            PessoaDataBase::class.java,
+            "pessoa.db"
+        ).build()
+    }
+
+    private val  viewModel by viewModels<PessoaViewModel>(
+        factoryProducer = {
+            object : ViewModelProvider.Factory{
+                override fun <T : ViewModel> create(modelClass: Class<T>) : T{
+                    return PessoaViewModel(Repository(db)) as T
+                }
+            }
+        }
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,7 +66,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppDatabaseTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    App()
+                    App(viewModel, this)
                 }
             }
         }
@@ -48,13 +74,17 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun App(){
+fun App(viewModel: PessoaViewModel, mainActivity: MainActivity){
     var nome by remember {
         mutableStateOf("")
     }
     var telefone by remember {
         mutableStateOf("")
     }
+    val pessoa = Pessoa (
+        nome,
+        telefone
+    )
     Column(
         Modifier
             .background(Color.Black)
@@ -125,9 +155,14 @@ fun App(){
             Arrangement.Center
         ){
             Button(
-                onClick = { /*TODO*/ }) {
+                onClick = {
+                    viewModel.upsertPessoa(pessoa)
+                    nome = ""
+                    telefone = ""
+                }) {
                 Text1(text = "Cadastrar")
             }
         }
     }
 }
+
