@@ -8,7 +8,6 @@ import androidx.room.RoomDatabase
     version = 1
 )
 
-
-abstract class PessoaDataBase : RoomDatabase() {
+abstract class PessoaDataBase : RoomDatabase(){
     abstract fun pessoaDao() : PessoaDao
 }
