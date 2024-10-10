@@ -227,24 +227,14 @@ fun App(
             Arrangement.Start
         ) {
             Text(
-                text = "Nome ",
+                text = "Cadastros: ",
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
+                fontSize = 24.sp,
                 color = Color(44, 99, 246)
             )
-            Row(
-                Modifier
-                    .fillMaxWidth(),
-                Arrangement.End
-            ) {
-                Text(
-                    text = "Telefone ",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = Color(44, 99, 246)
-                )
-            }
         }
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         HorizontalDivider()
 
